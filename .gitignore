@@ -11,3 +11,12 @@ __pycache__/
 
 # Conda env files (we keep the yml, but ignore env directories)
 /envs/*.lock
+
+# Ignore all files in db/ except .sql files
+/db/*
+!db/*.sql
+
+# Ignore common database files anywhere
+*.sqlite
+*.db
+*.db-journal
