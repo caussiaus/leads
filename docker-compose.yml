@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  db:
+    container_name: leads_postgres
+    image: postgres:15
+    environment:
+      POSTGRES_USER: leads_user
+      POSTGRES_PASSWORD: secret_pass
+      POSTGRES_DB: leadsdb
+    volumes:
+      - /data/ldb/pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/00_init.sql:ro  # ← optional but recommended
+

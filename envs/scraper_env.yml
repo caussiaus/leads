@@ -1,0 +1,25 @@
+name: scraper
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - aiohttp
+  - certifi
+  - flask
+  - requests
+  - beautifulsoup4
+  - python-docx
+  - pytorch
+  - torchvision
+  - torchaudio
+  - cudatoolkit=11.8
+  - playwright
+  - pip:
+      - transformers
+      - google-api-python-client
+      - python-dotenv
+      - sentence-transformers
+      - tiktoken
+      - blobfile

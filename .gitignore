@@ -1,0 +1,13 @@
+# ignore downloaded models
+/models/*
+!models/manifest.json
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.so
+.env
+*.log
+
+# Conda env files (we keep the yml, but ignore env directories)
+/envs/*.lock

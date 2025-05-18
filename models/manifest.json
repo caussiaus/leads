@@ -1,0 +1,28 @@
+{
+    "ner_model": {
+      "name": "Davlan/bert-base-multilingual-cased-ner-hrl",
+      "local_path": "models/ner_model",
+      "type": "token-classification"
+    },
+    "summarizer": {
+      "name": "teknium/OpenHermes-2.5-Mistral-7B",
+      "local_path": "models/summarizer_model",
+      "type": "causal-lm"
+    },
+    "bio_gen": {
+      "name": "meta-llama/Llama-2-13b-chat",
+      "local_path": "models/bio_generator_model",
+      "type": "chat"
+    },
+    "quality_scorer": {
+      "name": "nvidia/quality-text-classifier-deberta-base",
+      "local_path": "models/quality_scorer",
+      "type": "sequence-classification"
+    },
+    "embedder": {
+      "name": "intfloat/e5-large-v2",
+      "local_path": "models/embedder_model",
+      "type": "sentence-embedding"
+    }
+  }
+  
