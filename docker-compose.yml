@@ -2,10 +2,10 @@ version: "3.8"
 services:
   db:
     container_name: leads_postgres
-    image: postgres:15
+    image: postgres
     environment:
-      POSTGRES_USER: leads_user
-      POSTGRES_PASSWORD: secret_pass
+      POSTGRES_USER: *****
+      POSTGRES_PASSWORD: ******
       POSTGRES_DB: leadsdb
     volumes:
       - /data/ldb/pgdata:/var/lib/postgresql/data
