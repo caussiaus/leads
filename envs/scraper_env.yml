@@ -23,3 +23,5 @@ dependencies:
       - sentence-transformers
       - tiktoken
       - blobfile
+      - huggingface-hub>=0.20.0
+      - playwright==1.43.0

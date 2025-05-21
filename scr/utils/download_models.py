@@ -1,70 +1,75 @@
 #!/usr/bin/env python3
+"""
+download_models.py
+
+Downloads all Hugging Face models listed in models/manifest.json
+using huggingface_hub.snapshot_download, pulling full safetensors.
+
+Usage:
+    pip install huggingface-hub python-dotenv
+    python scr/utils/download_models.py
+"""
+
 import json
+import os
 from pathlib import Path
-from transformers import (
-    AutoTokenizer,
-    AutoModelForTokenClassification,
-    AutoModelForCausalLM,
-    AutoModelForSequenceClassification,
-    AutoModel
-)
-from transformers.utils import logging
-
-logging.set_verbosity_error()  # suppress verbose HF logs
+from dotenv import load_dotenv
+from huggingface_hub import snapshot_download
 
 # --------------------------------------------------
-# Define model type → HF loader mapping
+# Load HF_HUB_TOKEN from a project-local .env
 # --------------------------------------------------
-MODEL_LOADERS = {
-    "token-classification": AutoModelForTokenClassification,
-    "causal-lm": AutoModelForCausalLM,
-    "sequence-classification": AutoModelForSequenceClassification,
-    "sentence-embedding": AutoModel,
-    "chat": AutoModelForCausalLM,
-}
+root = Path(__file__).resolve().parents[2]  # ~/leads
+env_path = root / ".env"
+if env_path.exists():
+    load_dotenv(env_path)
+    print(f"Loaded environment variables from {env_path}")
+else:
+    print(f"Warning: .env file not found at {env_path}, proceeding without it.")
 
-# --------------------------------------------------
-# Start download process
-# --------------------------------------------------
+HF_TOKEN = os.getenv("HF_HUB_TOKEN")
+if not HF_TOKEN:
+    raise RuntimeError("Missing HF_HUB_TOKEN in environment or .env file")
+
+
+def hf_snapshot(repo_id: str, target_dir: Path):
+    """
+    Download the full contents of a HF repo (weights + tokenizer)
+    into the given target_dir using snapshot_download.
+    """
+    target_dir.mkdir(parents=True, exist_ok=True)
+    print(f"\n🧠 Downloading {repo_id} → {target_dir}")
+    snapshot_download(
+        repo_id=repo_id,
+        local_dir=str(target_dir),
+        # local_dir_use_symlinks is deprecated and ignored by HF Hub
+        allow_patterns=[
+            "*.safetensors",
+            "*.bin",
+            "*.pt",
+            "*.json",
+            "*.txt",
+            "*.model",
+        ],
+        use_auth_token=HF_TOKEN,
+    )
+    print(f"✅ Finished {repo_id}")
+
+
 def main():
-    root = Path(__file__).resolve().parent.parent.parent  # ~/leads
     manifest_path = root / "models" / "manifest.json"
+    if not manifest_path.exists():
+        raise FileNotFoundError(f"Cannot find manifest at {manifest_path}")
+
     manifest = json.loads(manifest_path.read_text())
 
     for key, meta in manifest.items():
-        name       = meta["name"]
+        repo_id = meta["name"]
         local_path = root / meta["local_path"]
-        mtype      = meta.get("type", "").lower()
+        hf_snapshot(repo_id, local_path)
 
-        print(f"\n🧠 [{key}] Downloading {name} → {local_path} (type={mtype})")
-        local_path.mkdir(parents=True, exist_ok=True)
+    print("\n🎉 All models have been fully downloaded.")
 
-        model_cls = MODEL_LOADERS.get(mtype)
-        if not model_cls:
-            print(f"⚠️ Skipping unknown model type '{mtype}' for {key}")
-            continue
-
-        # For some causal models, tokenizer saving fails (tiktoken/blobfile issue)
-        skip_tokenizer = "mistral" in name.lower() or mtype in {"causal-lm", "chat"}
-
-        # Try downloading tokenizer (if not skipped)
-        if not skip_tokenizer:
-            try:
-                tokenizer = AutoTokenizer.from_pretrained(name)
-                tokenizer.save_pretrained(local_path)
-                print(f"✅ Tokenizer saved.")
-            except Exception as e:
-                print(f"⚠️ Tokenizer download failed: {e}")
-
-        # Try downloading model
-        try:
-            model = model_cls.from_pretrained(name)
-            model.save_pretrained(local_path)
-            print(f"✅ Model saved.")
-        except Exception as e:
-            print(f"❌ Model download failed: {e}")
-
-    print("\n🎉 Done downloading all models.")
 
 if __name__ == "__main__":
     main()
