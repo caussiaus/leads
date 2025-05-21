@@ -2,7 +2,7 @@ version: "3.8"
 services:
   db:
     container_name: leads_postgres
-    image: postgres
+    image: ankane/pgvector
     environment:
       POSTGRES_USER: *****
       POSTGRES_PASSWORD: ******

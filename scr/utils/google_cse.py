@@ -1,6 +1,7 @@
 import requests
 import logging
-from .config import GOOGLE_API_KEY, GOOGLE_CX
+from scr.config import GOOGLE_API_KEY, GOOGLE_CX
+
 
 log = logging.getLogger(__name__)
 

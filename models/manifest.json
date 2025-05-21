@@ -15,7 +15,7 @@
       "type": "chat"
     },
     "quality_scorer": {
-      "name": "nvidia/quality-text-classifier-deberta-base",
+      "name": "nvidia/quality-classifier-deberta",
       "local_path": "models/quality_scorer",
       "type": "sequence-classification"
     },
